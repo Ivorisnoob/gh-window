@@ -14,13 +14,18 @@ export async function GET(
   const theme = (searchParams.get("theme") ?? "dark") as Theme;
   const showParam = searchParams.get("show") ?? "";
   const show = showParam ? showParam.split(",").map((s) => s.trim()) : [];
+  const accentParam = searchParams.get("accent") ?? "";
+  // Accept hex without # (e.g. ?accent=f97316)
+  const accent = /^[0-9a-fA-F]{3,6}$/.test(accentParam)
+    ? `#${accentParam}`
+    : undefined;
 
   // Validate theme
   const validTheme: Theme = theme === "light" ? "light" : "dark";
 
   try {
     const stats = await fetchGitHubStats(username);
-    const card = renderCard(stats, validTheme, show);
+    const card = renderCard(stats, validTheme, show, accent);
 
     return new ImageResponse(card, {
       width: 400,

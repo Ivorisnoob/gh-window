@@ -21,7 +21,7 @@ const themes: Record<Theme, ThemeColors> = {
     bg: "#0d1117",
     border: "#30363d",
     barBg: "#161b22",
-    accent: "#4affbd",
+    accent: "#f97316",
     text: "#e6edf3",
     muted: "#8b949e",
     chipBorder: "#30363d",
@@ -31,7 +31,7 @@ const themes: Record<Theme, ThemeColors> = {
     bg: "#ffffff",
     border: "#d0d7de",
     barBg: "#f6f8fa",
-    accent: "#226655",
+    accent: "#ea580c",
     text: "#1f2328",
     muted: "#57606a",
     chipBorder: "#d0d7de",
@@ -111,9 +111,11 @@ function Divider({ c }: { c: ThemeColors }) {
 export function renderCard(
   stats: GitHubStats,
   theme: Theme = "dark",
-  show: string[]
+  show: string[],
+  accent?: string
 ): ReactElement {
-  const c = themes[theme];
+  const base = themes[theme];
+  const c: ThemeColors = accent ? { ...base, accent } : base;
   const showAll = show.length === 0;
   const want = (key: string) => showAll || show.includes(key);
 

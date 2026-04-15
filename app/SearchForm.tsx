@@ -10,40 +10,22 @@ export default function SearchForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", gap: 8, width: "100%", maxWidth: 400 }}
-    >
-      <input
-        name="username"
-        placeholder="GitHub username"
-        required
-        style={{
-          flex: 1,
-          padding: "10px 16px",
-          borderRadius: 8,
-          border: "1px solid #30363d",
-          backgroundColor: "#161b22",
-          color: "#e6edf3",
-          fontSize: 14,
-          outline: "none",
-        }}
-      />
-      <button
-        type="submit"
-        style={{
-          padding: "10px 20px",
-          borderRadius: 8,
-          border: "none",
-          backgroundColor: "#4affbd",
-          color: "#0d1117",
-          fontWeight: 700,
-          fontSize: 14,
-          cursor: "pointer",
-        }}
-      >
-        Preview →
-      </button>
+    <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+      <div className="search-wrap">
+        <span className="search-at">@</span>
+        <input
+          className="search-input"
+          name="username"
+          placeholder="username"
+          autoComplete="off"
+          autoCapitalize="none"
+          spellCheck={false}
+          required
+        />
+        <button type="submit" className="search-btn">
+          Preview →
+        </button>
+      </div>
     </form>
   );
 }

@@ -1,10 +1,12 @@
 import { fetchGitHubStats } from "@/lib/github";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import ThemeToggle from "../ThemeToggle";
+import ColorCustomizer from "../ColorCustomizer";
 
 interface Props {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ theme?: string; show?: string }>;
+  searchParams: Promise<{ theme?: string; show?: string; accent?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -17,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PreviewPage({ params, searchParams }: Props) {
   const { username } = await params;
-  const { theme = "dark", show = "" } = await searchParams;
+  const { theme = "dark", show = "", accent = "f97316" } = await searchParams;
 
   let stats;
   try {
@@ -30,90 +32,78 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   const validTheme = theme === "light" ? "light" : "dark";
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ?? "https://gh-window.vercel.app";
-  const cardUrl = `${baseUrl}/api/${username}?theme=${validTheme}${show ? `&show=${show}` : ""}`;
 
-  const isDark = validTheme === "dark";
-  const bg = isDark ? "#0d1117" : "#f6f8fa";
-  const text = isDark ? "#e6edf3" : "#1f2328";
-  const muted = isDark ? "#8b949e" : "#57606a";
-  const accent = isDark ? "#4affbd" : "#226655";
-  const border = isDark ? "#30363d" : "#d0d7de";
-  const codeBg = isDark ? "#161b22" : "#eaeef2";
+  const cardUrl = [
+    `${baseUrl}/api/${username}`,
+    `?theme=${validTheme}`,
+    `&accent=${accent}`,
+    show ? `&show=${show}` : "",
+  ].join("");
 
-  const embedMd = `![${username}'s GitHub stats](${cardUrl})`;
+  const embedMd   = `![${username}'s GitHub stats](${cardUrl})`;
   const embedHtml = `<img src="${cardUrl}" alt="${username}'s GitHub stats" />`;
 
   return (
-    <html lang="en">
-      <body
-        style={{
-          margin: 0,
-          minHeight: "100vh",
-          backgroundColor: bg,
-          color: text,
-          fontFamily:
-            "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "40px 20px",
-          boxSizing: "border-box",
-          gap: 32,
-        }}
-      >
+    <>
+      <div className="bg-mesh" aria-hidden="true" />
+      <ThemeToggle />
+
+      <main className="page">
         {/* Card preview */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={cardUrl}
-          alt={`${username}'s github stats`}
-          style={{ maxWidth: "100%", borderRadius: 16 }}
-        />
+        <div className="card fade-up">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={cardUrl}
+            alt={`${username}'s github stats`}
+            style={{ display: "block" }}
+          />
+        </div>
 
         {/* User info */}
-        <div style={{ textAlign: "center" }}>
-          <p style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
+        <div
+          className="fade-up fade-up-d1"
+          style={{ textAlign: "center", lineHeight: 1.3 }}
+        >
+          <p
+            className="display"
+            style={{ fontSize: "clamp(1.4rem, 3vw, 1.8rem)", marginBottom: 4 }}
+          >
             {stats.name}
           </p>
-          <p style={{ margin: "4px 0 0", fontSize: 14, color: muted }}>
+          <p className="lead" style={{ fontSize: "0.9rem" }}>
             @{stats.username}
           </p>
         </div>
 
         {/* Theme toggle */}
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="toggle-group fade-up fade-up-d2">
           <a
-            href={`/${username}?theme=dark`}
-            style={{
-              padding: "6px 16px",
-              borderRadius: 999,
-              border: `1px solid ${border}`,
-              color: validTheme === "dark" ? accent : muted,
-              textDecoration: "none",
-              fontSize: 13,
-              fontWeight: validTheme === "dark" ? 700 : 400,
-            }}
+            href={`/${username}?theme=dark&accent=${accent}`}
+            className={`toggle${validTheme === "dark" ? " active" : ""}`}
           >
             Dark
           </a>
           <a
-            href={`/${username}?theme=light`}
-            style={{
-              padding: "6px 16px",
-              borderRadius: 999,
-              border: `1px solid ${border}`,
-              color: validTheme === "light" ? accent : muted,
-              textDecoration: "none",
-              fontSize: 13,
-              fontWeight: validTheme === "light" ? 700 : 400,
-            }}
+            href={`/${username}?theme=light&accent=${accent}`}
+            className={`toggle${validTheme === "light" ? " active" : ""}`}
           >
             Light
           </a>
         </div>
 
+        {/* Color customizer */}
+        <div className="fade-up fade-up-d2">
+          <ColorCustomizer
+            username={username}
+            theme={validTheme}
+            show={show}
+            currentAccent={accent}
+          />
+        </div>
+
         {/* Embed codes */}
         <div
+          className="fade-up fade-up-d3"
           style={{
             width: "100%",
             maxWidth: 500,
@@ -124,50 +114,33 @@ export default async function PreviewPage({ params, searchParams }: Props) {
         >
           {[
             { label: "Markdown", code: embedMd },
-            { label: "HTML", code: embedHtml },
+            { label: "HTML",     code: embedHtml },
           ].map(({ label, code }) => (
             <div key={label}>
-              <p
-                style={{
-                  margin: "0 0 6px",
-                  fontSize: 12,
-                  color: muted,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                }}
-              >
+              <p className="label" style={{ marginBottom: 8 }}>
                 {label}
               </p>
-              <div
-                style={{
-                  backgroundColor: codeBg,
-                  border: `1px solid ${border}`,
-                  borderRadius: 8,
-                  padding: "10px 14px",
-                  fontSize: 12,
-                  fontFamily: "monospace",
-                  overflowX: "auto",
-                  wordBreak: "break-all",
-                  color: text,
-                }}
-              >
-                {code}
-              </div>
+              <div className="code-block">{code}</div>
             </div>
           ))}
         </div>
 
+        {/* Back link */}
         <a
           href="/"
+          className="fade-up fade-up-d4 lead"
           style={{
-            fontSize: 13,
-            color: muted,
-            textDecoration: "none",
+            fontSize: "0.85rem",
+            color: "var(--accent)",
+            fontWeight: 600,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
           }}
         >
           ← gh-window
         </a>
-      </body>
-    </html>
+      </main>
+    </>
   );
 }
