@@ -1,5 +1,5 @@
 import type { GitHubStats } from "./github";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 
 // Satori-compatible JSX — inline styles only, flex layout only
 
@@ -112,7 +112,7 @@ export function renderCard(
   stats: GitHubStats,
   theme: Theme = "dark",
   show: string[]
-): ReactNode {
+): ReactElement {
   const c = themes[theme];
   const showAll = show.length === 0;
   const want = (key: string) => showAll || show.includes(key);
