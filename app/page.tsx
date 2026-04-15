@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import SearchForm from "./SearchForm";
 
@@ -56,9 +57,26 @@ export default function LandingPage() {
           <SearchForm />
         </div>
 
-        {/* Usage */}
         <div
           className="fade-up fade-up-d3"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 10,
+          }}
+        >
+          <Link href="/docs" className="toggle active">
+            Docs
+          </Link>
+          <Link href="/test" className="toggle">
+            Test Embeds
+          </Link>
+        </div>
+
+        {/* Usage */}
+        <div
+          className="fade-up fade-up-d4"
           style={{
             width: "100%",
             maxWidth: 500,
@@ -81,7 +99,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <p
-          className="fade-up fade-up-d4 lead"
+          className="fade-up fade-up-d5 lead"
           style={{ fontSize: "0.82rem", textAlign: "center" }}
         >
           Made with ♥ by{" "}

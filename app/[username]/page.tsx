@@ -125,21 +125,25 @@ export default async function PreviewPage({ params, searchParams }: Props) {
           ))}
         </div>
 
-        {/* Back link */}
-        <Link
-          href="/"
-          className="fade-up fade-up-d4 lead"
+        <div
+          className="fade-up fade-up-d4"
           style={{
-            fontSize: "0.85rem",
-            color: "var(--accent)",
-            fontWeight: 600,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 10,
           }}
         >
-          ← gh-window
-        </Link>
+          <Link href="/" className="toggle active">
+            Home
+          </Link>
+          <Link href="/docs" className="toggle">
+            Docs
+          </Link>
+          <Link href="/test" className="toggle">
+            Test Embeds
+          </Link>
+        </div>
       </main>
     </>
   );

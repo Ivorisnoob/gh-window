@@ -101,6 +101,9 @@ export default async function TestPage({ searchParams }: Props) {
             <Link href="/" className="toggle active">
               Home
             </Link>
+            <Link href="/docs" className="toggle">
+              Docs
+            </Link>
             <Link href={`/${username}`} className="toggle">
               Preview Builder
             </Link>
