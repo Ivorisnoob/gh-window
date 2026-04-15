@@ -315,6 +315,14 @@ img { max-width: 100%; display: block; }
   background: var(--border);
 }
 
+/* ── Test Page ───────────────────────────────────────────────── */
+.test-variant-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
 /* ── Tag/chip ────────────────────────────────────────────────── */
 .chip {
   display: inline-flex;
@@ -348,4 +356,5 @@ img { max-width: 100%; display: block; }
 @media (max-width: 600px) {
   .display { font-size: 2rem; }
   .search-btn { padding: 0 16px; font-size: 0.78rem; }
+  .test-variant-grid { grid-template-columns: 1fr; }
 }
