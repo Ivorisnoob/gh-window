@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 const PRESETS = [
@@ -22,23 +22,29 @@ interface Props {
 }
 
 export default function ColorCustomizer({ username, theme, show, currentAccent }: Props) {
-  const [accent, setAccent] = useState(currentAccent || "f97316");
+  const [accent, setAccent] = useState(() => currentAccent || "f97316");
   const [, startTransition] = useTransition();
   const router = useRouter();
 
-  function buildUrl(hex: string) {
-    const params = new URLSearchParams();
-    if (theme) params.set("theme", theme);
-    if (show)  params.set("show", show);
-    params.set("accent", hex);
-    return `/${username}?${params.toString()}`;
-  }
+  useEffect(() => {
+    if (accent === currentAccent) return;
+
+    const timeout = window.setTimeout(() => {
+      const params = new URLSearchParams();
+      if (theme) params.set("theme", theme);
+      if (show) params.set("show", show);
+      params.set("accent", accent);
+
+      startTransition(() => {
+        router.replace(`/${username}?${params.toString()}`, { scroll: false });
+      });
+    }, 180);
+
+    return () => window.clearTimeout(timeout);
+  }, [accent, currentAccent, router, show, startTransition, theme, username]);
 
   function applyColor(hex: string) {
     setAccent(hex);
-    startTransition(() => {
-      router.replace(buildUrl(hex), { scroll: false });
-    });
   }
 
   return (
@@ -91,7 +97,7 @@ export default function ColorCustomizer({ username, theme, show, currentAccent }
           <span>+</span>
           <input
             type="color"
-            defaultValue={`#${accent}`}
+            value={`#${accent}`}
             onChange={(e) => {
               const hex = e.target.value.replace("#", "");
               applyColor(hex);

@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { fetchGitHubStats } from "@/lib/github";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ThemeToggle from "../ThemeToggle";
 import ColorCustomizer from "../ColorCustomizer";
 
 interface Props {
@@ -46,7 +46,6 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   return (
     <>
       <div className="bg-mesh" aria-hidden="true" />
-      <ThemeToggle />
 
       <main className="page">
         {/* Card preview */}
@@ -94,6 +93,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
         {/* Color customizer */}
         <div className="fade-up fade-up-d2">
           <ColorCustomizer
+            key={`${username}:${validTheme}:${show}:${accent}`}
             username={username}
             theme={validTheme}
             show={show}
@@ -126,7 +126,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
         </div>
 
         {/* Back link */}
-        <a
+        <Link
           href="/"
           className="fade-up fade-up-d4 lead"
           style={{
@@ -139,7 +139,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
           }}
         >
           ← gh-window
-        </a>
+        </Link>
       </main>
     </>
   );

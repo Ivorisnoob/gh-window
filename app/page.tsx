@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import SearchForm from "./SearchForm";
-import ThemeToggle from "./ThemeToggle";
 
 export const metadata: Metadata = {
   title: "gh-window — GitHub Stats Cards",
@@ -15,7 +14,6 @@ export default function LandingPage() {
   return (
     <>
       <div className="bg-mesh" aria-hidden="true" />
-      <ThemeToggle />
 
       <main className="page">
         {/* Hero */}
