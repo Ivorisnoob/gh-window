@@ -61,7 +61,7 @@ export default function LandingPage() {
         {/* Demo card */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`${BASE}/api/sameerasw`}
+          src={`${BASE}/api/ivorisnoob`}
           alt="demo card"
           style={{ maxWidth: "100%", borderRadius: 16 }}
         />
@@ -116,10 +116,10 @@ export default function LandingPage() {
         <p style={{ margin: 0, fontSize: 13, color: "#8b949e" }}>
           Made with ♥ by{" "}
           <a
-            href="https://sameerasw.com"
+            href="https://ivorisnoob.lol"
             style={{ color: "#4affbd", textDecoration: "none" }}
           >
-            sameerasw
+            ivorisnoob
           </a>
         </p>
       </body>
