@@ -172,7 +172,7 @@ export function renderCard(
 
       {/* Core stats */}
       {showCore && (
-        <>
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <div
             style={{
               display: "flex",
@@ -190,12 +190,12 @@ export function renderCard(
               <StatBlock value={stats.followers} label="Followers" c={c} />
             )}
           </div>
-        </>
+        </div>
       )}
 
       {/* Streak row */}
       {showStreak && (
-        <>
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <Divider c={c} />
           <div
             style={{
@@ -220,12 +220,12 @@ export function renderCard(
               c={c}
             />
           </div>
-        </>
+        </div>
       )}
 
       {/* Languages */}
       {showLangs && (
-        <>
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <Divider c={c} />
           <div
             style={{
@@ -251,7 +251,7 @@ export function renderCard(
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
