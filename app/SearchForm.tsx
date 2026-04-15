@@ -16,14 +16,14 @@ export default function SearchForm() {
         <input
           className="search-input"
           name="username"
-          placeholder="username"
+          placeholder="your-github-name"
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
           required
         />
         <button type="submit" className="search-btn">
-          Preview →
+          Open Preview
         </button>
       </div>
     </form>
