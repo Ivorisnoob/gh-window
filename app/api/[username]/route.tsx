@@ -4,6 +4,47 @@ import { renderCard, type Theme } from "@/lib/card";
 
 export const runtime = "edge";
 
+/**
+ * Shared caching headers.
+ *
+ * - `Cache-Control`          → sent to downstream clients (browser, GitHub Camo
+ *                               proxy). Camo respects max-age here.
+ * - `Vercel-CDN-Cache-Control` → consumed by Vercel's CDN only, never forwarded
+ *                               to the client. Keeps the generated PNG warm on
+ *                               the edge so subsequent requests never hit the
+ *                               origin (and therefore never risk a Camo timeout).
+ */
+const CACHE_HEADERS: Record<string, string> = {
+  "Cache-Control": "public, max-age=1800, s-maxage=3600, stale-while-revalidate=7200",
+  "Vercel-CDN-Cache-Control": "s-maxage=3600, stale-while-revalidate=7200",
+};
+
+/**
+ * Helper: generate a PNG via ImageResponse, then re-wrap it in a plain Response
+ * with explicit headers so they are not consumed/stripped by Vercel's edge layer.
+ */
+async function pngResponse(
+  element: React.ReactElement,
+  width: number,
+  height: number,
+  extraHeaders?: Record<string, string>
+): Promise<Response> {
+  const imgRes = new ImageResponse(element, { width, height });
+
+  // Read the full body so we know Content-Length (helps Camo)
+  const body = await imgRes.arrayBuffer();
+
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "image/png",
+      "Content-Length": String(body.byteLength),
+      ...CACHE_HEADERS,
+      ...extraHeaders,
+    },
+  });
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ username: string }> }
@@ -27,26 +68,19 @@ export async function GET(
     const stats = await fetchGitHubStats(username);
     const card = renderCard(stats, validTheme, show, accent);
 
-    return new ImageResponse(card, {
-      width: 400,
-      height: 220,
-      headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
-      },
-    });
+    return pngResponse(card, 400, 220);
   } catch (err) {
     const msg =
       err instanceof Error && err.message === "USER_NOT_FOUND"
         ? `User "${username}" not found`
         : "GitHub API error — try again later";
 
-    const errorTheme = validTheme;
-    const bg = errorTheme === "dark" ? "#0d1117" : "#ffffff";
-    const border = errorTheme === "dark" ? "#30363d" : "#d0d7de";
-    const text = errorTheme === "dark" ? "#e6edf3" : "#1f2328";
-    const muted = errorTheme === "dark" ? "#8b949e" : "#57606a";
+    const bg = validTheme === "dark" ? "#0d1117" : "#ffffff";
+    const border = validTheme === "dark" ? "#30363d" : "#d0d7de";
+    const text = validTheme === "dark" ? "#e6edf3" : "#1f2328";
+    const muted = validTheme === "dark" ? "#8b949e" : "#57606a";
 
-    return new ImageResponse(
+    return pngResponse(
       <div
         style={{
           display: "flex",
@@ -67,7 +101,13 @@ export async function GET(
         <span style={{ fontSize: 14, color: text }}>{msg}</span>
         <span style={{ fontSize: 11, color: muted }}>gh-window</span>
       </div>,
-      { width: 400, height: 120 }
+      400,
+      120,
+      // Don't cache error responses as long
+      {
+        "Cache-Control": "public, max-age=60, s-maxage=60",
+        "Vercel-CDN-Cache-Control": "s-maxage=60",
+      }
     );
   }
 }
