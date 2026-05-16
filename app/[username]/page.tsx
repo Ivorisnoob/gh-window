@@ -22,11 +22,12 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   const { theme = "dark", show = "", accent = "f97316" } = await searchParams;
 
   let stats;
+  let fetchError: string | null = null;
   try {
     stats = await fetchGitHubStats(username);
   } catch (e) {
     if (e instanceof Error && e.message === "USER_NOT_FOUND") notFound();
-    throw e;
+    fetchError = e instanceof Error ? e.message : "Unknown error";
   }
 
   const validTheme = theme === "light" ? "light" : "dark";
@@ -67,11 +68,16 @@ export default async function PreviewPage({ params, searchParams }: Props) {
             className="display"
             style={{ fontSize: "clamp(1.4rem, 3vw, 1.8rem)", marginBottom: 4 }}
           >
-            {stats.name}
+            {stats?.name ?? username}
           </p>
           <p className="lead" style={{ fontSize: "0.9rem" }}>
-            @{stats.username}
+            @{stats?.username ?? username}
           </p>
+          {fetchError && (
+            <p className="lead" style={{ fontSize: "0.8rem", color: "#f97316", marginTop: 8 }}>
+              ⚠ GitHub data temporarily unavailable — card preview may be limited
+            </p>
+          )}
         </div>
 
         {/* Theme toggle */}
